@@ -1,4 +1,6 @@
 from simulator.weather import Weather
+from simulator.tire import create_tire
+import random
 
 class Race:
 
@@ -17,6 +19,8 @@ class Race:
         self.total_laps = total_laps
         self.verbose = verbose
         self.weather = Weather()
+        self.safety_car_active = False
+        self.safety_car_laps_remaining = 0
 
     def process_pit_stop(self, driver, lap):
 
@@ -31,8 +35,6 @@ class Race:
             next_compound = (
                 strategy.tire_plan[pit_index]
             )
-
-            from simulator.tire import create_tire
 
             new_tire = create_tire(next_compound)
 
@@ -49,6 +51,9 @@ class Race:
             )
 
     def process_overtakes(self):
+
+        if self.safety_car_active:
+            return
 
         for i in range(len(self.drivers) - 1):
 
@@ -95,7 +100,29 @@ class Race:
             key=lambda d: d.total_time
         )
 
+        if self.safety_car_active:
+
+            leader_time = self.drivers[0].total_time
+
+            for driver in self.drivers[1:]:
+
+                gap = (
+                    driver.total_time
+                    - leader_time
+                )
+
+                compressed_gap = gap * 0.85
+
+                driver.total_time = (
+                    leader_time
+                    + compressed_gap
+                )
+
+
     def print_standings(self, lap):
+
+        if not self.verbose:
+            return
 
         print(f"\n--- Standings After Lap {lap} ---")
 
@@ -116,11 +143,41 @@ class Race:
                 f"{driver.total_time:.2f}s"
             )
 
+    def update_safety_car(self):
+        if self.safety_car_active:
+
+            self.safety_car_laps_remaining -= 1
+
+            if self.safety_car_laps_remaining <= 0:
+
+                self.safety_car_active = False
+
+                if self.verbose:
+                    print("\nSAFETY CAR ENDED\n")
+
+            return
+
+        chance = random.random()
+
+        # 5% chance
+        if chance < 0.05:
+
+            self.safety_car_active = True
+
+            self.safety_car_laps_remaining = 2
+
+            if self.verbose:
+                print("\nSAFETY CAR DEPLOYED\n")
+
+
     def simulate_lap(self, lap):
 
         self.weather.update_weather()
 
-        print(f"\n========== LAP {lap} ==========\n")
+        self.update_safety_car()
+
+        if self.verbose:
+            print(f"\n========== LAP {lap} ==========\n")
 
         if self.verbose:
             print(
@@ -128,36 +185,50 @@ class Race:
                 f"{self.weather.condition}"
             )
 
+        if self.safety_car_active and self.verbose:
+            print("SAFETY CAR ACTIVE")
+
+        safety_car_multiplier = 1.0
+
+        if self.safety_car_active:
+            safety_car_multiplier = 1.15
+
         for driver in self.drivers:
 
             self.process_pit_stop(driver, lap)
 
             lap_time = driver.drive_lap(
                 self.track.base_lap_time,
-                self.weather.get_grip_multiplier()
+                self.weather.get_grip_multiplier() * safety_car_multiplier
             )
 
-            print(
-                f"{driver.name:12} | "
-                f"Lap Time: {lap_time:.2f}s | "
-                f"Tire: {driver.tire.compound:6} | "
-                f"Wear: {driver.tire.wear:.2f} | "
-                f"Total: {driver.total_time:.2f}s"
+            
+            if self.verbose:
+                print(
+                    f"{driver.name:12} | "
+                    f"Lap Time: {lap_time:.2f}s | "
+                    f"Tire: {driver.tire.compound:6} | "
+                    f"Wear: {driver.tire.wear:.2f} | "
+                    f"Total: {driver.total_time:.2f}s"
             )
 
         self.update_standings()
-
+        
         self.process_overtakes()
+        
+        self.update_standings()
 
         self.print_standings(lap)
 
+
     def run(self):
 
-        print(
-            f"\n=== "
-            f"{self.track.name} Race Simulation "
-            f"===\n"
-        )
+        if self.verbose:
+            print(
+                f"\n=== "
+                f"{self.track.name} Race Simulation "
+                f"===\n"
+            )
 
         for lap in range(
             1,
@@ -166,15 +237,16 @@ class Race:
 
             self.simulate_lap(lap)
 
-        print("\n========== FINAL RESULTS ==========\n")
+        if self.verbose:
+            print("\n========== FINAL RESULTS ==========\n")
 
-        for position, driver in enumerate(
-            self.drivers,
-            start=1
-        ):
+            for position, driver in enumerate(
+                self.drivers,
+                start=1
+            ):
 
-            print(
-                f"{position}. "
-                f"{driver.name:12} "
-                f"{driver.total_time:.2f}s"
-            )
+                print(
+                    f"{position}. "
+                    f"{driver.name:12} "
+                    f"{driver.total_time:.2f}s"
+                )

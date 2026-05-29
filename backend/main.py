@@ -16,14 +16,12 @@ from visualize import (
 
 def main():
 
-    # Create track
     silverstone = Track(
         name="Silverstone",
         base_lap_time=90.0,
         pit_stop_time=22
     )
 
-    # Create drivers
     drivers = [
 
         Driver(
@@ -48,7 +46,6 @@ def main():
         )
     ]
 
-    # Create strategies
     strategies = {
 
         "Verstappen": Strategy(
@@ -67,7 +64,6 @@ def main():
         )
     }
 
-    # Create race
     race = Race(
         track=silverstone,
         drivers=drivers,
@@ -75,10 +71,8 @@ def main():
         total_laps=10
     )
 
-    # Run race simulation
     race.run()
 
-    # Visualization
     plot_lap_times(drivers)
 
     plot_positions(drivers)

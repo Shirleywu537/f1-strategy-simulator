@@ -1,6 +1,5 @@
 import random
 
-
 class Weather:
 
     def __init__(self):
@@ -11,13 +10,15 @@ class Weather:
 
         chance = random.random()
 
-        # 10% chance to rain
-        if chance < 0.10:
-            self.condition = "Rain"
+        if self.condition == "Dry":
 
-        # 10% chance to dry up
-        elif chance < 0.20:
-            self.condition = "Dry"
+            if chance < 0.05:
+                self.condition = "Rain"
+
+        else:
+
+            if chance < 0.15:
+                self.condition = "Dry"
 
     def get_grip_multiplier(self):
 

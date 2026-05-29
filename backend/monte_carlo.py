@@ -9,7 +9,6 @@ from simulator.race import Race
 
 def run_monte_carlo(num_simulations=100):
 
-    # Store statistics
     results = {
 
         "Verstappen": {
@@ -30,14 +29,12 @@ def run_monte_carlo(num_simulations=100):
 
     for sim in range(num_simulations):
 
-        # Create track
         silverstone = Track(
             name="Silverstone",
             base_lap_time=90.0,
             pit_stop_time=22
         )
 
-        # Create fresh drivers every simulation
         drivers = [
 
             Driver(
@@ -62,7 +59,6 @@ def run_monte_carlo(num_simulations=100):
             )
         ]
 
-        # Strategies
         strategies = {
 
             "Verstappen": Strategy(
@@ -81,7 +77,6 @@ def run_monte_carlo(num_simulations=100):
             )
         }
 
-        # Create race
         race = Race(
             track=silverstone,
             drivers=drivers,
@@ -90,13 +85,10 @@ def run_monte_carlo(num_simulations=100):
             verbose=False
         )
 
-        # Disable race printing
         run_silent_race(race)
 
-        # Final standings
         drivers.sort(key=lambda d: d.total_time)
 
-        # Record results
         for position, driver in enumerate(
             drivers,
             start=1
@@ -109,7 +101,6 @@ def run_monte_carlo(num_simulations=100):
             if position == 1:
                 results[driver.name]["wins"] += 1
 
-    # Print statistics
     print("\n========== MONTE CARLO RESULTS ==========\n")
 
     for driver_name, stats in results.items():
