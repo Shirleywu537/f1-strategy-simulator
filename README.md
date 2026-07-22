@@ -2,6 +2,8 @@
 
 A Python-based Formula 1 race strategy simulator that models realistic race dynamics using probabilistic simulation and Monte Carlo methods. The simulator evaluates pit stop strategies under varying weather conditions, tire degradation, overtaking opportunities, and safety car deployments to estimate race outcomes.
 
+The interactive app is hosted on Streamlit at [f1-strategy-simulator-x2vnih6fqungtysbar7mws.streamlit.app](https://f1-strategy-simulator-x2vnih6fqungtysbar7mws.streamlit.app/).
+
 ---
 
 # Motivation
@@ -238,48 +240,3 @@ The dashboard allows users to:
 | Hard → Medium | 5.1 | 1:32:10 | 1 |
 
 *(Example results for illustration.)*
-
----
-
-## Technologies
-
-- Python
-- NumPy
-- Pandas
-- Matplotlib
-- Streamlit
-
----
-
-## Future Improvements
-
-- FIA regulation constraints
-- DRS modeling
-- Fuel load simulation
-- Driver skill ratings
-- Track-specific degradation models
-- Historical race calibration
-- Bayesian parameter estimation
-- Reinforcement learning strategy optimization
-- Live telemetry integration
-- Multi-driver/team simulation
-
----
-
-## Learning Objectives
-
-This project demonstrates:
-
-- Object-oriented software design
-- Simulation modeling
-- Probabilistic programming
-- Monte Carlo methods
-- Data visualization
-- Interactive dashboard development
-- Strategy optimization under uncertainty
-
----
-
-## License
-
-This project is intended for educational and portfolio purposes.
